@@ -41,7 +41,6 @@ jobs:
 
     - name: keycopy
       run: |
-         rm FusionLiteServerKeyFile
          echo "$env:FusionLiteServerKeyFile" > FusionLiteServerKeyFile
          icacls FusionLiteServerKeyFile /inheritance:d /remove:g "Users" "NT AUTHORITY\Authenticated Users"
          icacls FusionLiteServerKeyFile /grant:r "$($env:username):(R,W)"
