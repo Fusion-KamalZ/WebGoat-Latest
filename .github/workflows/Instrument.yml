@@ -57,7 +57,7 @@ jobs:
         
           # Grant ONLY the current runner service account
           icacls $FusionLiteServerKeyFilePath /grant:r "$($env:UserName):R"
-
+          echo "File: $FusionLiteServerKeyFilePath "
       
     - name: Clean Project
       run: |
