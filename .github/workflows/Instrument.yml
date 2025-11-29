@@ -44,49 +44,51 @@ jobs:
           #echo "$env:FusionLiteServerKeyFile" > FusionLiteServerKeyFile
           @"
           $env:FusionLiteServerKeyFile
-          "@ | Out-File -FilePath FusionLiteServerKeyFile -Encoding ascii
+          "@ | Out-File -FilePath "C:\\TEMP\\FusionLiteServerKeyFile" -Encoding ascii
 
-          icacls FusionLiteServerKeyFile /inheritance:d
+          $FusionLiteServerKeyFilePath = "C:\\TEMP\\FusionLiteServerKeyFile"
+          
+          icacls $FusionLiteServerKeyFilePath /inheritance:d
         
           # Explicitly remove dangerous groups
-          icacls FusionLiteServerKeyFile /remove "NT AUTHORITY\Authenticated Users"
-          icacls FusionLiteServerKeyFile /remove "BUILTIN\Users"
-          icacls FusionLiteServerKeyFile /remove "Everyone"
+          icacls $FusionLiteServerKeyFilePath /remove "NT AUTHORITY\Authenticated Users"
+          icacls $FusionLiteServerKeyFilePath /remove "BUILTIN\Users"
+          icacls $FusionLiteServerKeyFilePath /remove "Everyone"
         
           # Grant ONLY the current runner service account
-          icacls FusionLiteServerKeyFile /grant:r "$($env:UserName):R"
+          icacls $FusionLiteServerKeyFilePath /grant:r "$($env:UserName):R"
 
       
     - name: Clean Project
       run: |
           $cmdtext = "Clean" + ":" + $env:FusionLiteProject
           echo "Cmd : $cmdtext"
-          ssh -i  FusionLiteServerKeyFile  -p $env:FusionLiteServerPort $env:FusionLiteServerUser@$env:FusionLiteServerHost $cmdtext
+          ssh -i  $FusionLiteServerKeyFilePath  -p $env:FusionLiteServerPort $env:FusionLiteServerUser@$env:FusionLiteServerHost $cmdtext
           echo "Clean Project Done"
 
     - name: Transmitting Project Files
       run: |
           echo "cd $env:FusionLiteProject/Input`nput $env:ApplicationFile`nexit" | Out-File -FilePath "sftp_put.txt" -Encoding ASCII
 
-          sftp -b sftp_put.txt -i  FusionLiteServerKeyFile  -P $env:FusionLiteServerPort $env:FusionLiteServerUser@$env:FusionLiteServerHost
+          sftp -b sftp_put.txt -i  $FusionLiteServerKeyFilePath  -P $env:FusionLiteServerPort $env:FusionLiteServerUser@$env:FusionLiteServerHost
           
     - name: Preprocessing Project
       run: |
           $cmdtext = "PreProcess" + ":" + $env:FusionLiteProject
           echo "Cmd : $cmdtext"
-          ssh -i FusionLiteServerKeyFile -p $env:FusionLiteServerPort $env:FusionLiteServerUser@$env:FusionLiteServerHost $cmdtext
+          ssh -i $FusionLiteServerKeyFilePath -p $env:FusionLiteServerPort $env:FusionLiteServerUser@$env:FusionLiteServerHost $cmdtext
 
     - name: Instrument Project
       run: |
           $cmdtext = "Instrument" + ":" + $env:FusionLiteProject
           echo "Cmd : $cmdtext"
-          ssh -i  FusionLiteServerKeyFile  -p $env:FusionLiteServerPort $env:FusionLiteServerUser@$env:FusionLiteServerHost $cmdtext
+          ssh -i  $FusionLiteServerKeyFilePath  -p $env:FusionLiteServerPort $env:FusionLiteServerUser@$env:FusionLiteServerHost $cmdtext
 
     - name: PostProcess Project
       run: |
           $cmdtext = "PostProcess" + ":" + $env:FusionLiteProject
           echo "Cmd : $cmdtext"
-          ssh -i  FusionLiteServerKeyFile  -p $env:FusionLiteServerPort $env:FusionLiteServerUser@$env:FusionLiteServerHost $cmdtext
+          ssh -i  $FusionLiteServerKeyFilePath  -p $env:FusionLiteServerPort $env:FusionLiteServerUser@$env:FusionLiteServerHost $cmdtext
 
     - name: Transmitting Project Files
       run: |
@@ -98,4 +100,4 @@ jobs:
           }
           echo "lcd $env:InstrumentedFolder`ncd $env:FusionLiteProject/Output`nget $env:InstrumentedFile`nexit" | Out-File -FilePath "sftp_get.txt" -Encoding ASCII
 
-          sftp -b sftp_get.txt -i FusionLiteServerKeyFile -P $env:FusionLiteServerPort $env:FusionLiteServerUser@$env:FusionLiteServerHost
+          sftp -b sftp_get.txt -i $FusionLiteServerKeyFilePath -P $env:FusionLiteServerPort $env:FusionLiteServerUser@$env:FusionLiteServerHost
