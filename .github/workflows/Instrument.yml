@@ -5,7 +5,7 @@ on:
 
 jobs:
   instrument:
-    runs-on: WebGoat-Latest
+    runs-on: self-hosted
 
     defaults:
       run:
