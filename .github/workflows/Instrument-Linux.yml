@@ -8,7 +8,7 @@ on:
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   instrument:
-    runs-on: self-hosted
+    runs-on: linux
 
     defaults:
       run:
@@ -40,14 +40,11 @@ jobs:
           echo "InstrumentedFolder: ${{ env.InstrumentedFolder }}"
           echo "InstrumentedFile: ${{ env.InstrumentedFile }}"
 
-      - name: Infusion
+      - name: key
         run: |
           echo "$FusionLiteServerKeyFile" > FusionLiteServerKeyFile
           chmod 600 FusionLiteServerKeyFile
           ssh-keyscan -p $FusionLiteServerPort $FusionLiteServerHost >> ~/.ssh/known_hosts
-
-      - name: Print current working directory
-        run: pwd
 
       - name: Clean Project
         run: |
